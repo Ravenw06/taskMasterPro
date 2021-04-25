@@ -1,5 +1,5 @@
 var tasks = {};
-
+// var tempArr = [];
 var createTask = function(taskText, taskDate, taskList) {
   // create elements that make up a task item
   var taskLi = $("<li>").addClass("list-group-item");
@@ -44,6 +44,44 @@ var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
+$(".card .list-group").sortable({
+  connectWith: $(".card .list-group"),
+  scroll:false, 
+  tolerance: "pointer", 
+  helper: "clone", 
+  activate: function(event) {
+    console.log("activate", this);
+  },
+  deactivate:function(event){
+    console.log("deactivate", this);
+  },
+  over:function(event){
+    console.log("over", this);
+  },
+  out:function(event){
+    console.log("put", event.target);
+  },
+  update: function(event) {
+    var tempArr = [];
+    $(this).children().each(function() {
+      var text = $(this)
+      .find("p")
+      .text()
+      .trim();
+      var date = $(this)
+      .find("span")
+      .text()
+      .trim();
+
+      tempArr.push({
+        text: text,
+        date: date
+      });
+    });
+    console.log(tempArr);
+  }
+});
+
 
 // $ = find all .list-group, when p is onclick, run the function below 
 $(".list-group").on("click", "p", function(){
@@ -75,6 +113,20 @@ $(".list-group").on("blur", "textarea", function(){
   // replace textarea with p element
   $(this).replaceWith(taskP);
 })
+
+$("#trash").droppable({
+  accept: ".card .list-group-item",
+  tolerance: "touch",
+  drop: function(event, ui) {
+    ui.draggable.remove();
+  },
+  over: function(event, ui) {
+    console.log("over");
+  },
+  out: function(event, ui) {
+    console.log("out");
+  }
+});
 
 // due date was clicked
 $(".list-group").on("click", "span", function() {
